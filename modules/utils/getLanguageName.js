@@ -12,6 +12,7 @@ const contentTypeNames = {
   'font/woff2': 'WOFF2',
   'text/css': 'CSS',
   'text/html': 'HTML',
+  'text/javascript': 'JavaScript',
   'text/jsx': 'JSX',
   'text/markdown': 'Markdown',
   'text/plain': 'Plain Text',

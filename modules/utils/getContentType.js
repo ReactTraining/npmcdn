@@ -3,6 +3,7 @@ import mime from 'mime';
 
 mime.define(
   {
+    'text/javascript': ['mjs'],
     'text/plain': [
       'authors',
       'changes',
