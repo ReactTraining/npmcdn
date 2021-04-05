@@ -14,6 +14,7 @@ function escapeHTML(code) {
 
 // These should probably be added to highlight.js auto-detection.
 const extLanguages = {
+  cjs: 'javascript',
   map: 'json',
   mjs: 'javascript',
   tsbuildinfo: 'json',
