@@ -1,11 +1,11 @@
-import { renderToString, renderToStaticMarkup } from 'react-dom/server';
+import { renderToNodeStream } from 'react-dom/server';
 import semver from 'semver';
 
 import BrowseApp from '../client/browse/App.js';
 import MainTemplate from '../templates/MainTemplate.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import getScripts from '../utils/getScripts.js';
-import { createElement, createHTML } from '../utils/markup.js';
+import { createElement } from '../utils/markup.js';
 import { getVersionsAndTags } from '../utils/npm.js';
 
 const doctype = '<!DOCTYPE html>';
@@ -43,27 +43,28 @@ async function serveBrowsePage(req, res) {
     filename: req.filename,
     target: req.browseTarget
   };
-  const content = createHTML(renderToString(createElement(BrowseApp, data)));
+  const content = createElement(BrowseApp, data);
   const elements = getScripts('browse', 'iife', globalURLs);
 
-  const html =
-    doctype +
-    renderToStaticMarkup(
-      createElement(MainTemplate, {
-        title: `UNPKG - ${req.packageName}`,
-        description: `The CDN for ${req.packageName}`,
-        data,
-        content,
-        elements
-      })
-    );
-
-  res
-    .set({
-      'Cache-Control': 'public, max-age=14400', // 4 hours
-      'Cache-Tag': 'browse'
+  const stream = renderToNodeStream(
+    createElement(MainTemplate, {
+      title: `UNPKG - ${req.packageName}`,
+      description: `The CDN for ${req.packageName}`,
+      data,
+      content,
+      elements
     })
-    .send(html);
+  );
+
+  res.set({
+    'Content-Type': 'text/html',
+    'Cache-Control': 'public, max-age=14400', // 4 hours
+    'Cache-Tag': 'browse'
+  });
+
+  res.write(doctype);
+
+  stream.pipe(res);
 }
 
 export default asyncHandler(serveBrowsePage);

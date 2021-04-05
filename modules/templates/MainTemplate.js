@@ -47,13 +47,13 @@ gtag('config', 'UA-140352188-1');`),
       favicon && e('link', { rel: 'shortcut icon', href: favicon }),
       e('title', null, title),
       x(promiseShim),
-      x(fetchShim),
-      data && x(`window.__DATA__ = ${encodeJSONForScript(data)}`)
+      x(fetchShim)
     ),
     e(
       'body',
       null,
-      e('div', { id: 'root', dangerouslySetInnerHTML: content }),
+      e('div', { id: 'root' }, content),
+      data && x(`window.__DATA__ = ${encodeJSONForScript(data)}`),
       ...elements
     )
   );

@@ -1,9 +1,9 @@
-import { renderToString, renderToStaticMarkup } from 'react-dom/server';
+import { renderToNodeStream } from 'react-dom/server';
 
 import MainApp from '../client/main/App.js';
 import MainTemplate from '../templates/MainTemplate.js';
 import getScripts from '../utils/getScripts.js';
-import { createElement, createHTML } from '../utils/markup.js';
+import { createElement } from '../utils/markup.js';
 
 const doctype = '<!DOCTYPE html>';
 const globalURLs =
@@ -20,17 +20,20 @@ const globalURLs =
       };
 
 export default function serveMainPage(req, res) {
-  const content = createHTML(renderToString(createElement(MainApp)));
+  const content = createElement(MainApp);
   const elements = getScripts('main', 'iife', globalURLs);
 
-  const html =
-    doctype +
-    renderToStaticMarkup(createElement(MainTemplate, { content, elements }));
+  const stream = renderToNodeStream(
+    createElement(MainTemplate, { content, elements })
+  );
 
-  res
-    .set({
-      'Cache-Control': 'public, max-age=14400', // 4 hours
-      'Cache-Tag': 'main'
-    })
-    .send(html);
+  res.set({
+    'Content-Type': 'text/html',
+    'Cache-Control': 'public, max-age=14400', // 4 hours
+    'Cache-Tag': 'main'
+  });
+
+  res.write(doctype);
+
+  stream.pipe(res);
 }
