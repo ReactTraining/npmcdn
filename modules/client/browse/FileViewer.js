@@ -57,6 +57,7 @@ function CodeListing({ highlights }) {
                     paddingRight: 10,
                     color: 'rgba(27,31,35,.3)',
                     textAlign: 'right',
+                    fontVariant: 'tabular-nums',
                     verticalAlign: 'top',
                     width: '1%',
                     minWidth: 50,
